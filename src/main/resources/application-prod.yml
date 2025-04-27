@@ -1,0 +1,21 @@
+spring:
+  application:
+    name: clonemantle
+  datasource:
+    url: ${JDBC_URL}
+    username: ${JDBC_USERNAME}
+    password: ${JDBC_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: false
+  ai:
+    openai:
+      api-key: ${SPRING_AI_OPENAI_API_KEY}
+
+server.error:
+  include-message: always
+  include-binding-errors: always
+  include-stacktrace: never
+  include-exception: false

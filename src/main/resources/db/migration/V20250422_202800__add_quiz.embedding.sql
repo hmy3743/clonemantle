@@ -1,0 +1,4 @@
+CREATE EXTENSION vector;
+
+ALTER TABLE quiz
+ADD COLUMN embedding vector (1536) NOT NULL;

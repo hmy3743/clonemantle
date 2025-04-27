@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css"
+    >
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<script>
+    const addGuess = (word, similarity, isPrepend = false) => {
+        console.log(word)
+        console.log(similarity)
+        console.log(isPrepend)
+
+        const guesses = document.getElementById("guesses");
+        const template = document.importNode(
+            document.getElementById("guess_template").content,
+            true
+        )
+
+        template.querySelector(".word").textContent = word;
+        template.querySelector(".similarity").textContent = similarity || "-";
+
+        if (isPrepend) {
+            guesses.prepend(template);
+        } else {
+            guesses.append(template);
+        }
+    }
+
+    document.addEventListener("DOMContentLoaded", async () => {
+        const response = await fetch("/api/v1/guess?" + new URLSearchParams({first: 20}).toString());
+        const { content } = await response.json();
+
+        for(const guess of content) {
+            addGuess(guess.word, guess.similarity);
+        }
+    }, false);
+</script>
+<body>
+<div class="container">
+    <h1>CloneMantle</h1>
+
+    <form onsubmit="handleGuess(); return false">
+        <input id="word" name="word"/>
+        <button type="submit">제출</button>
+    </form>
+
+    <table>
+        <thead>
+        <tr>
+            <th>단어</th>
+            <th>유사도</th>
+        </tr>
+        </thead>
+        <tbody id="guesses">
+        <template id="guess_template">
+            <tr>
+                <td class="word"></td>
+                <td class="similarity"></td>
+            </tr>
+        </template>
+        </tbody>
+    </table>
+</div>
+</body>
+<script>
+    const handleGuess = async () => {
+        const el = document.getElementById("word");
+        const word = el.value;
+
+        const response = await fetch(
+            "/api/v1/guess",
+            {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({word: word})
+            }
+        );
+        const { similarity } = await response.json();
+
+        addGuess(word, similarity, true);
+    }
+</script>
+</html>
